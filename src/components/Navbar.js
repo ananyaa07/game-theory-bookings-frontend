@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-const Navbar = ({role}) => {
+const Navbar = ({ role }) => {
   return (
     <nav className="bg-navyBlue text-white p-3 sticky top-0 z-50">
       <div className="container mx-auto flex justify-between items-center">
@@ -11,12 +11,12 @@ const Navbar = ({role}) => {
         <div>
           {role === 'customer' ? (
             <>
-              <Link to="/view-bookings">
+              <Link to="/bookings/view">
                 <button className="bg-white text-navyBlue px-4 py-2 rounded-md hover:bg-gray-200 transition mr-2">
                   View Bookings
                 </button>
               </Link>
-              <Link to="/create-booking">
+              <Link to="/bookings/create">
                 <button className="bg-white text-navyBlue px-4 py-2 rounded-md hover:bg-gray-200 transition">
                   Create Booking
                 </button>
@@ -29,22 +29,42 @@ const Navbar = ({role}) => {
                   View Bookings
                 </button>
               </Link>
-              <Link to="/operations-page">
+              <Link to="/operations/create-sport">
+                <button className="bg-white text-navyBlue px-4 py-2 rounded-md hover:bg-gray-200 transition mr-2">
+                  Create Sport
+                </button>
+              </Link>
+              <Link to="/operations/create-resource">
+                <button className="bg-white text-navyBlue px-4 py-2 rounded-md hover:bg-gray-200 transition mr-2">
+                  Create Resource
+                </button>
+              </Link>
+              <Link to="/operations/create-center">
                 <button className="bg-white text-navyBlue px-4 py-2 rounded-md hover:bg-gray-200 transition">
-                  Perform Operations
+                  Create Centre
                 </button>
               </Link>
             </>
-          ) : role === 'admin' ? ( 
+          ) : role === 'admin' ? (
             <>
               <Link to="/promote">
                 <button className="bg-white text-navyBlue px-4 py-2 rounded-md hover:bg-gray-200 transition mr-2">
                   Promote User
                 </button>
               </Link>
-              <Link to="/timewise-bookings">
+              <Link to="/operations/create-sport">
+                <button className="bg-white text-navyBlue px-4 py-2 rounded-md hover:bg-gray-200 transition mr-2">
+                  Create Sport
+                </button>
+              </Link>
+              <Link to="/operations/create-resource">
+                <button className="bg-white text-navyBlue px-4 py-2 rounded-md hover:bg-gray-200 transition mr-2">
+                  Create Resource
+                </button>
+              </Link>
+              <Link to="/operations/create-centre">
                 <button className="bg-white text-navyBlue px-4 py-2 rounded-md hover:bg-gray-200 transition">
-                  View Timewise Bookings
+                  Create Centre
                 </button>
               </Link>
             </>

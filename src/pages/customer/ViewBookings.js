@@ -1,20 +1,36 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "../../components/Navbar";
 
-const ViewBookings = ({ userType }) => {
+const ViewBookings = ({role}) => {
   const [bookings, setBookings] = useState([]);
 
   useEffect(() => {
     const storedBookings = [
-      { id: 1, centre: "Centre 1", sport: "Tennis", court: "Court 2", date: "2024-10-25", time: "10:00 AM" },
-      { id: 2, centre: "Centre 2", sport: "Badminton", court: "Court 1", date: "2024-10-26", time: "11:00 AM" },
+      {
+        id: 1,
+        centre: "Centre 1",
+        sport: "Tennis",
+        court: "Court 2",
+        date: "2024-10-25",
+        time: { start: "10:00 AM", end: "11:00 AM" }, 
+        typeOfBooking: "Booking",
+      },
+      {
+        id: 2,
+        centre: "Centre 2",
+        sport: "Badminton",
+        court: "Court 1",
+        date: "2024-10-26",
+        time: { start: "11:00 AM", end: "12:00 PM" },
+        typeOfBooking: "Coaching",
+      },
     ];
     setBookings(storedBookings);
   }, []);
 
   return (
     <div>
-      <Navbar userType={userType} />
+      <Navbar role={role} />
       <div className="min-h-screen bg-gray-100 flex items-center justify-center p-6">
         <div className="bg-white shadow-lg rounded-lg p-6 max-w-4xl w-full">
           <h2 className="text-2xl font-semibold text-center text-navyBlue mb-6">
@@ -31,6 +47,7 @@ const ViewBookings = ({ userType }) => {
                     <th className="px-4 py-2 border-b-2 border-gray-300">Court</th>
                     <th className="px-4 py-2 border-b-2 border-gray-300">Date</th>
                     <th className="px-4 py-2 border-b-2 border-gray-300">Time</th>
+                    <th className="px-4 py-2 border-b-2 border-gray-300">Type of Booking</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -40,7 +57,10 @@ const ViewBookings = ({ userType }) => {
                       <td className="px-4 py-2 border-b">{booking.sport}</td>
                       <td className="px-4 py-2 border-b">{booking.court}</td>
                       <td className="px-4 py-2 border-b">{booking.date}</td>
-                      <td className="px-4 py-2 border-b">{booking.time}</td>
+                      <td className="px-4 py-2 border-b">
+                        {`${booking.time.start} to ${booking.time.end}`}
+                      </td>
+                      <td className="px-4 py-2 border-b">{booking.typeOfBooking}</td>
                     </tr>
                   ))}
                 </tbody>

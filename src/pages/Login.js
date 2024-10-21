@@ -5,7 +5,7 @@ import Navbar from '../components/Navbar';
 const Login = ({ setUserType }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [navbarUserType, setNavbarUserType] = useState('');
+  const [role, setRole] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
@@ -13,12 +13,12 @@ const Login = ({ setUserType }) => {
 
     if (email === 'admin@example.com' && password === 'adminPassword') {
       setUserType('admin');
-      setNavbarUserType('admin');
+      setRole('admin');
       console.log('Logging in as admin');
       navigate('/promote');
     } else {
       setUserType('customer');
-      setNavbarUserType('customer');
+      setRole('customer');
       console.log('Logging in as customer');
       navigate('/create-booking');
     }
@@ -26,7 +26,7 @@ const Login = ({ setUserType }) => {
 
   return (
     <div>
-      <Navbar userType={navbarUserType} />
+      <Navbar role={role} />
       <div className="min-h-screen bg-gray-100 flex items-center justify-center p-6">
         <div className="bg-white shadow-lg rounded-lg p-6 max-w-sm w-full">
           <h2 className="text-3xl font-semibold text-center text-navyBlue mb-6">Login</h2>
