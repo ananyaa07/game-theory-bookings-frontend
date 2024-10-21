@@ -6,7 +6,9 @@ import CreateBooking from './pages/customer/CreateBooking';
 import ViewBookings from './pages/customer/ViewBookings';
 import Operations from './pages/operations/Operations';
 import TimeWiseBookings from './pages/operations/TimeWiseBookings';
-import Promote from './pages/admin/promote';
+import Promote from './pages/admin/Promote';
+import Signup from './pages/Signup';
+
 
 const App = () => {
   const [userType, setUserType] = useState(null);
@@ -42,6 +44,7 @@ const App = () => {
         <Route path="/operations-page" element={<Operations/>} /> 
         <Route path="/timewise-bookings" element={<TimeWiseBookings />} />
         <Route path="/promote" element={<Promote/>}/>
+        <Route path="/Signup" element={<Signup/>}/>
 
       </Routes>
     </Router>

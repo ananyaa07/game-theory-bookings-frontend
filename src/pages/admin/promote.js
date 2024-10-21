@@ -5,7 +5,6 @@ const initialCustomers = [
   { id: 1, name: 'John Doe', role: 'customer' },
   { id: 2, name: 'Jane Smith', role: 'customer' },
   { id: 3, name: 'Michael Brown', role: 'customer' },
-
 ];
 
 const Promote = () => {
@@ -14,7 +13,7 @@ const Promote = () => {
   const handlePromote = (id) => {
     const updatedCustomers = customers.map((customer) => {
       if (customer.id === id) {
-        return { ...customer, promoted: true }; 
+        return { ...customer, role: 'operations' }; 
       }
       return customer;
     });
@@ -33,6 +32,7 @@ const Promote = () => {
               <tr className="bg-navyBlue text-white">
                 <th className="py-2 px-4 border">ID</th>
                 <th className="py-2 px-4 border">Name</th>
+                <th className="py-2 px-4 border">Role</th>
                 <th className="py-2 px-4 border">Actions</th>
               </tr>
             </thead>
@@ -41,8 +41,9 @@ const Promote = () => {
                 <tr key={customer.id} className="hover:bg-gray-100">
                   <td className="py-2 px-4 border">{customer.id}</td>
                   <td className="py-2 px-4 border">{customer.name}</td>
+                  <td className="py-2 px-4 border text-center">{customer.role}</td>
                   <td className="py-2 px-4 border text-center">
-                    {customer.promoted ? (
+                    {customer.role === 'operations' ? (
                       <span className="text-green-500">Promoted</span>
                     ) : (
                       <button

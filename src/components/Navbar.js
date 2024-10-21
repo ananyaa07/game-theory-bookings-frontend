@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-const Navbar = ({ userType }) => {
+const Navbar = ({role}) => {
   return (
     <nav className="bg-navyBlue text-white p-3 sticky top-0 z-50">
       <div className="container mx-auto flex justify-between items-center">
@@ -9,7 +9,7 @@ const Navbar = ({ userType }) => {
           Game Theory Booking
         </Link>
         <div>
-          {userType === 'customer' ? (
+          {role === 'customer' ? (
             <>
               <Link to="/view-bookings">
                 <button className="bg-white text-navyBlue px-4 py-2 rounded-md hover:bg-gray-200 transition mr-2">
@@ -22,7 +22,7 @@ const Navbar = ({ userType }) => {
                 </button>
               </Link>
             </>
-          ) : userType === 'operations' ? (
+          ) : role === 'operations' ? (
             <>
               <Link to="/timewise-bookings">
                 <button className="bg-white text-navyBlue px-4 py-2 rounded-md hover:bg-gray-200 transition mr-2">
@@ -35,7 +35,7 @@ const Navbar = ({ userType }) => {
                 </button>
               </Link>
             </>
-          ) : userType === 'admin' ? ( 
+          ) : role === 'admin' ? ( 
             <>
               <Link to="/promote">
                 <button className="bg-white text-navyBlue px-4 py-2 rounded-md hover:bg-gray-200 transition mr-2">
