@@ -3,22 +3,22 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 
 const Login = ({ setUserType }) => {
-  const [userTypeLocal, setUserTypeLocal] = useState(''); 
-  const [loggedInUserType, setLoggedInUserType] = useState(null); 
+  const [userTypeLocal, setUserTypeLocal] = useState('');
   const navigate = useNavigate();
 
   const handleUserTypeChange = (event) => {
-    setUserTypeLocal(event.target.value); 
+    setUserTypeLocal(event.target.value);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     setUserType(userTypeLocal); 
-    setLoggedInUserType(userTypeLocal); 
     console.log("Logging in as", userTypeLocal);
-    
+
     if (userTypeLocal === 'customer') {
-      navigate('/create-booking');  
+      navigate('/create-booking');
+    } else if (userTypeLocal === 'operations') {
+      navigate('/operations-page');
     } else {
       navigate('/home'); 
     }
@@ -26,7 +26,7 @@ const Login = ({ setUserType }) => {
 
   return (
     <div>
-      <Navbar userType={loggedInUserType} />
+      <Navbar userType={userTypeLocal} />
       <div className="min-h-screen bg-gray-100 flex items-center justify-center p-6">
         <div className="bg-white shadow-lg rounded-lg p-6 max-w-sm w-full">
           <h2 className="text-3xl font-semibold text-center text-navyBlue mb-6">Login</h2>
@@ -58,7 +58,4 @@ const Login = ({ setUserType }) => {
   );
 };
 
-
 export default Login;
-
-

@@ -22,6 +22,32 @@ const Navbar = ({ userType }) => {
                 </button>
               </Link>
             </>
+          ) : userType === 'operations' ? (
+            <>
+              <Link to="/timewise-bookings">
+                <button className="bg-white text-navyBlue px-4 py-2 rounded-md hover:bg-gray-200 transition mr-2">
+                  View Bookings
+                </button>
+              </Link>
+              <Link to="/operations-page">
+                <button className="bg-white text-navyBlue px-4 py-2 rounded-md hover:bg-gray-200 transition">
+                  Perform Operations
+                </button>
+              </Link>
+            </>
+          ) : userType === 'admin' ? ( 
+            <>
+              <Link to="/promote">
+                <button className="bg-white text-navyBlue px-4 py-2 rounded-md hover:bg-gray-200 transition mr-2">
+                  Promote User
+                </button>
+              </Link>
+              <Link to="/timewise-bookings">
+                <button className="bg-white text-navyBlue px-4 py-2 rounded-md hover:bg-gray-200 transition">
+                  View Timewise Bookings
+                </button>
+              </Link>
+            </>
           ) : (
             <Link to="/login">
               <button className="bg-white text-navyBlue px-6 py-2 rounded-md hover:bg-gray-200 transition">
