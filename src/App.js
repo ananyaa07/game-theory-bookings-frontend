@@ -6,8 +6,9 @@ import CreateBooking from './pages/customer/CreateBooking';
 import ViewBookings from './pages/customer/ViewBookings';
 import Operations from './pages/operations/Operations';
 import TimeWiseBookings from './pages/operations/TimeWiseBookings';
-import Promote from './pages/admin/Promote';
 import Signup from './pages/Signup';
+import Promote from './pages/admin/Promote.js';
+
 
 
 const App = () => {

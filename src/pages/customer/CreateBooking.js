@@ -3,7 +3,6 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Navbar from "../../components/Navbar";
 
-
 const CreateBooking = ({ userType }) => {
   const [centre, setCentre] = useState("");
   const [sport, setSport] = useState("");
@@ -29,13 +28,13 @@ const CreateBooking = ({ userType }) => {
       <Navbar userType={userType} />
       <div className="min-h-screen bg-gray-100 flex items-center justify-center p-10">
         <div className="bg-white shadow-lg rounded-lg p-4 max-w-xl w-[150%]">
-          <h2 className="text-xl font-semibold text-center text-navyBlue mb-4"> 
+          <h2 className="text-xl font-semibold text-center text-navyBlue mb-4">
             Create Booking
           </h2>
 
-          <form className="space-y-3"> 
+          <form className="space-y-3">
             <div>
-              <label className="block text-gray-700 mb-1" htmlFor="centre"> 
+              <label className="block text-gray-700 mb-1" htmlFor="centre">
                 Select Centre
               </label>
               <select
@@ -100,7 +99,7 @@ const CreateBooking = ({ userType }) => {
               </select>
             </div>
 
-            <div>
+            <div className="w-full">
               <label className="block text-gray-700 mb-1" htmlFor="date">
                 Select Date
               </label>

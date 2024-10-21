@@ -20,3 +20,8 @@ code {
 :root {
   --navyBlue: #001f3f;
 }
+
+
+.react-datepicker-wrapper {
+  width: 100%;
+}
