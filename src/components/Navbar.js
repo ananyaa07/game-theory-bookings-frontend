@@ -1,16 +1,23 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Navbar = () => {
-  const [role, setRole] = useState(()=>
-    localStorage.getItem('role') || ''
-  );
+  const [role, setRole] = useState(() => localStorage.getItem('role') || '');
+  const navigate = useNavigate();  
 
   const logOut = () => {
     localStorage.removeItem('role');
     localStorage.removeItem('token');
-    setRole('');
-  }
+    setRole('');  
+    navigate('/home');  
+  };
+
+  useEffect(() => {
+    const storedRole = localStorage.getItem('role');
+    if (storedRole) {
+      setRole(storedRole);  
+    }
+  }, []);
 
   return (
     <nav className="bg-navyBlue text-white p-3 sticky top-0 z-50">
@@ -19,14 +26,14 @@ const Navbar = () => {
           Game Theory Booking
         </Link>
         <div>
-          {role === "customer" ? (
+          {role === 'customer' ? (
             <>
-              <Link to="/view-bookings">
+              <Link to="/bookings/view">
                 <button className="bg-white text-navyBlue px-4 py-2 rounded-md hover:bg-gray-200 transition mr-2">
                   View Bookings
                 </button>
               </Link>
-              <Link to="/create-booking">
+              <Link to="/bookings/create">
                 <button className="bg-white text-navyBlue px-4 py-2 rounded-md hover:bg-gray-200 transition">
                   Create Booking
                 </button>
@@ -38,7 +45,7 @@ const Navbar = () => {
                 Logout
               </button>
             </>
-          ) : role === "operations" ? (
+          ) : role === 'operations' ? (
             <>
               <Link to="/timewise-bookings">
                 <button className="bg-white text-navyBlue px-4 py-2 rounded-md hover:bg-gray-200 transition mr-2">
@@ -57,7 +64,7 @@ const Navbar = () => {
                 Logout
               </button>
             </>
-          ) : role === "admin" ? (
+          ) : role === 'admin' ? (
             <>
               <Link to="/promote">
                 <button className="bg-white text-navyBlue px-4 py-2 rounded-md hover:bg-gray-200 transition mr-2">
@@ -69,7 +76,8 @@ const Navbar = () => {
                   View Timewise Bookings
                 </button>
               </Link>
-              <button className="bg-white mx-2 text-navyBlue px-6 py-2 rounded-md hover:bg-gray-200 transition"
+              <button
+                className="bg-white mx-2 text-navyBlue px-6 py-2 rounded-md hover:bg-gray-200 transition"
                 onClick={logOut}
               >
                 Logout

@@ -1,9 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Navbar from "../../components/Navbar";
 
-const CreateBooking = ({ role }) => {
+const API_BASE = "http://localhost:3001/api/v1";
+
+const CreateBooking = ({ role, token }) => {
+  const [centres, setCentres] = useState([]);
+  const [sports, setSports] = useState([]);
   const [centre, setCentre] = useState("");
   const [sport, setSport] = useState("");
   const [typeOfBooking, setTypeOfBooking] = useState("");
@@ -13,8 +18,6 @@ const CreateBooking = ({ role }) => {
   const [warning, setWarning] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
-  const centres = ["Centre 1", "Centre 2", "Centre 3"];
-  const sports = ["Tennis", "Badminton", "Squash"];
   const bookingTypes = [
     "Booking",
     "Checked-in",
@@ -24,15 +27,72 @@ const CreateBooking = ({ role }) => {
     "Pending Payment",
   ];
 
-  const handleDateChange = (date) => {
-    setDate(date);
-    if (date) {
+  // Fetch centers from the backend
+  useEffect(() => {
+    const fetchCentres = async () => {
+      try {
+        const response = await axios.get(`${API_BASE}/centers`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setCentres(response.data);
+      } catch (error) {
+        console.error("Error fetching centers:", error);
+      }
+    };
+    fetchCentres();
+  }, [token]);
 
-      setAvailableSlots([
-        { time: "10:00 AM - 11:00 AM", available: 5 },
-        { time: "11:00 AM - 12:00 PM", available: 3 },
-        { time: "12:00 PM - 1:00 PM", available: 2 },
-      ]);
+  // Fetch sports based on selected center
+  useEffect(() => {
+    const fetchSports = async () => {
+      if (centre) {
+        try {
+          const response = await axios.get(`${API_BASE}/sports`, {
+            params: { centerId: centre },
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          setSports(response.data);
+        } catch (error) {
+          console.error("Error fetching sports:", error);
+        }
+      }
+    };
+    fetchSports();
+  }, [centre, token]);
+
+  const getAvailableTimeSlots = async (centreId, sportId, date) => {
+    try {
+      const response = await axios.get(`${API_BASE}/bookings/available`, {
+        params: { centreId, sportId, bookingDate: date },
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return response.data.availableTimeSlots;
+    } catch (error) {
+      console.error("Error fetching available slots:", error);
+      return [];
+    }
+  };
+
+  const createBooking = async (bookingData) => {
+    try {
+      const response = await axios.post(`${API_BASE}/bookings/create`, bookingData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error creating booking:", error);
+      throw new Error(error.response?.data?.error || "Failed to create booking");
+    }
+  };
+
+  const handleDateChange = async (date) => {
+    setDate(date);
+    if (date && centre && sport) {
+      const formattedDate = date.toISOString().split("T")[0];
+      const slots = await getAvailableTimeSlots(centre, sport, formattedDate);
+      setAvailableSlots(
+        slots.map(slot => ({ time: `${slot.startHour}:00 - ${slot.endHour}:00`, available: slot.availableResources }))
+      );
     } else {
       setAvailableSlots([]);
     }
@@ -61,23 +121,38 @@ const CreateBooking = ({ role }) => {
     setSelectedSlots(updatedSlots);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!warning && selectedSlots.length > 0) {
-      const firstSlot = selectedSlots[0];
-      const lastSlot = selectedSlots[selectedSlots.length - 1];
+      const startHour = parseInt(selectedSlots[0].split(":")[0]);
+      const endHour = parseInt(selectedSlots[selectedSlots.length - 1].split(":")[0]) + 1;
+      const formattedDate = date.toISOString().split("T")[0];
 
-      setSuccessMessage(
-        `Booking confirmed from ${firstSlot} to ${lastSlot}.`
-      );
+      const bookingData = {
+        centreId: centre,
+        sportId: sport,
+        bookingDate: formattedDate,
+        startHour,
+        endHour,
+        status: typeOfBooking,
+        remarks: "User booking",
+      };
 
-      setCentre("");
-      setSport("");
-      setTypeOfBooking("");
-      setDate(null);
-      setSelectedSlots([]);
-      setAvailableSlots([]);
+      try {
+        await createBooking(bookingData);
+        setSuccessMessage(`Booking confirmed from ${selectedSlots[0]} to ${selectedSlots[selectedSlots.length - 1]}.`);
+        
+        // Reset form
+        setCentre("");
+        setSport("");
+        setTypeOfBooking("");
+        setDate(null);
+        setSelectedSlots([]);
+        setAvailableSlots([]);
+      } catch (error) {
+        setWarning(error.message);
+      }
     }
   };
 
@@ -106,8 +181,8 @@ const CreateBooking = ({ role }) => {
                   Select a centre
                 </option>
                 {centres.map((centre) => (
-                  <option key={centre} value={centre}>
-                    {centre}
+                  <option key={centre._id} value={centre._id}>
+                    {centre.name}
                   </option>
                 ))}
               </select>
@@ -128,8 +203,8 @@ const CreateBooking = ({ role }) => {
                   Select a sport
                 </option>
                 {sports.map((sport) => (
-                  <option key={sport} value={sport}>
-                    {sport}
+                  <option key={sport._id} value={sport._id}>
+                    {sport.name}
                   </option>
                 ))}
               </select>
@@ -167,7 +242,7 @@ const CreateBooking = ({ role }) => {
                 className="w-full p-1.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-navyBlue"
                 placeholderText="Select a date"
                 dateFormat="yyyy/MM/dd"
-                minDate={new Date()} 
+                minDate={new Date()}
                 required
               />
             </div>
@@ -182,9 +257,7 @@ const CreateBooking = ({ role }) => {
                     <div
                       key={slot.time}
                       className={`flex justify-between p-1 border-b last:border-b-0 cursor-pointer ${
-                        selectedSlots.includes(slot.time)
-                          ? "bg-blue-100"
-                          : ""
+                        selectedSlots.includes(slot.time) ? "bg-blue-100" : ""
                       }`}
                       onClick={() => handleSlotSelect(slot.time)}
                     >

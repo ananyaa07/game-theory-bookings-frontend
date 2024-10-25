@@ -7,12 +7,15 @@ const Login = ({ setUserType }) => {
 	const [password, setPassword] = useState("");
 	const [navbarUserType, setNavbarUserType] = useState("");
 	const [loginError, setLoginError] = useState("");
+	const [successMessage, setSuccessMessage] = useState(""); 
 	const navigate = useNavigate();
 
 	const API_BASE = 'http://localhost:3001/api';
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
+		setLoginError(""); 
+		setSuccessMessage("");
 
 		try {
 			const response = await fetch(`${API_BASE}/v1/auth/login`, {
@@ -32,16 +35,18 @@ const Login = ({ setUserType }) => {
 			localStorage.setItem("token", token);
 
 			// Set user type based on role
-      console.log(user);
-      localStorage.setItem("role", user.role);
+			localStorage.setItem("role", user.role);
 			setNavbarUserType(user.role);
 
-			// Redirect based on role
-			if (user.role === "admin") {
-				navigate("/promote");
-			} else {
-				navigate("/create-booking");
-			}
+			setSuccessMessage("Logged in successfully!");
+			
+			setTimeout(() => {
+				if (user.role === "admin") {
+					navigate("/promote");
+				} else {
+					navigate("/bookings/create"); 
+				}
+			}, 2000); 
 		} catch (error) {
 			console.error("Login error:", error);
 			setLoginError(error.message);
@@ -56,6 +61,11 @@ const Login = ({ setUserType }) => {
 					<h2 className="text-3xl font-semibold text-center text-navyBlue mb-6">
 						Login
 					</h2>
+					{successMessage && (
+						<div className="text-green-500 text-sm text-center mb-4">
+							{successMessage}
+						</div>
+					)}
 					<form onSubmit={handleSubmit} className="space-y-4">
 						<div>
 							<label className="block text-gray-700 mb-2" htmlFor="email">
