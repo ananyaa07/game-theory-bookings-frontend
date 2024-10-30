@@ -1,32 +1,46 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "../../components/Navbar";
 
-const ViewBookings = ({role}) => {
+const ViewBookings = ({ role }) => {
   const [bookings, setBookings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const API_BASE = "http://localhost:3001/api/v1";
+  const userId = localStorage.getItem("userId");
 
   useEffect(() => {
-    const storedBookings = [
-      {
-        id: 1,
-        centre: "Centre 1",
-        sport: "Tennis",
-        court: "Court 2",
-        date: "2024-10-25",
-        time: { start: "10:00 AM", end: "11:00 AM" }, 
-        typeOfBooking: "Booking",
-      },
-      {
-        id: 2,
-        centre: "Centre 2",
-        sport: "Badminton",
-        court: "Court 1",
-        date: "2024-10-26",
-        time: { start: "11:00 AM", end: "12:00 PM" },
-        typeOfBooking: "Coaching",
-      },
-    ];
-    setBookings(storedBookings);
-  }, []);
+    const fetchBookings = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await fetch(`${API_BASE}/bookings/user/${userId}`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch bookings");
+        }
+
+        const data = await response.json();
+        setBookings(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBookings();
+  }, [userId]);
+
+  // Function to format date
+  const formatDate = (dateString) => {
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
 
   return (
     <div>
@@ -37,7 +51,11 @@ const ViewBookings = ({role}) => {
             View Your Bookings
           </h2>
 
-          {bookings.length > 0 ? (
+          {loading && <div className="text-gray-500 text-center">Loading...</div>}
+          
+          {error && <div className="text-red-500 text-center">{error}</div>}
+
+          {bookings.length > 0 && !loading && !error ? (
             <div className="flex justify-center">
               <table className="min-w-full bg-white border text-center">
                 <thead>
@@ -52,22 +70,22 @@ const ViewBookings = ({role}) => {
                 </thead>
                 <tbody>
                   {bookings.map((booking) => (
-                    <tr key={booking.id}>
-                      <td className="px-4 py-2 border-b">{booking.centre}</td>
-                      <td className="px-4 py-2 border-b">{booking.sport}</td>
-                      <td className="px-4 py-2 border-b">{booking.court}</td>
-                      <td className="px-4 py-2 border-b">{booking.date}</td>
+                    <tr key={booking._id}>
+                      <td className="px-4 py-2 border-b">{booking.center.name}</td>
+                      <td className="px-4 py-2 border-b">{booking.sport.name}</td>
+                      <td className="px-4 py-2 border-b">{booking.resource.name}</td>
+                      <td className="px-4 py-2 border-b">{formatDate(booking.date)}</td> 
                       <td className="px-4 py-2 border-b">
-                        {`${booking.time.start} to ${booking.time.end}`}
+                        {`${booking.startTime} to ${booking.endTime}`}
                       </td>
-                      <td className="px-4 py-2 border-b">{booking.typeOfBooking}</td>
+                      <td className="px-4 py-2 border-b">{booking.type}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
           ) : (
-            <div className="text-gray-500 text-center">You have no bookings yet.</div>
+            !loading && <div className="text-gray-500 text-center">You have no bookings yet.</div>
           )}
         </div>
       </div>

@@ -10,36 +10,35 @@ const Login = ({ setUserType }) => {
 	const [successMessage, setSuccessMessage] = useState(""); 
 	const navigate = useNavigate();
 
-	const API_BASE = 'http://localhost:3001/api';
+	const API_BASE = 'http://localhost:3001/api/v1';
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		setLoginError(""); 
 		setSuccessMessage("");
-
+	
 		try {
-			const response = await fetch(`${API_BASE}/v1/auth/login`, {
+			const response = await fetch(`${API_BASE}/auth/login`, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ email, password }),
 			});
-
+	
 			if (!response.ok) {
 				throw new Error("Invalid email or password");
 			}
-
+	
 			const data = await response.json();
 			const { user, token } = data;
-
-			// Store token in local storage
+	
+			// Store token, user role, and userId in local storage
 			localStorage.setItem("token", token);
-
-			// Set user type based on role
 			localStorage.setItem("role", user.role);
+			localStorage.setItem("userId", user.id); 
+	
 			setNavbarUserType(user.role);
-
 			setSuccessMessage("Logged in successfully!");
-			
+	
 			setTimeout(() => {
 				if (user.role === "admin") {
 					navigate("/promote");
@@ -52,7 +51,7 @@ const Login = ({ setUserType }) => {
 			setLoginError(error.message);
 		}
 	};
-
+	
 	return (
 		<div>
 			<Navbar userType={navbarUserType} />

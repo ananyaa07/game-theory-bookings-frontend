@@ -70,7 +70,7 @@ const TimelyBookings = ({ userType }) => {
 
 	const calendarComponentRef = useRef(null);
 
-	const API_BASE = 'http://localhost:3001/api';
+	const API_BASE = 'http://localhost:3001/api/v1';
 	const authToken = localStorage.getItem("token");
 
 	useEffect(()=>{
@@ -158,7 +158,7 @@ const TimelyBookings = ({ userType }) => {
 
 			// Fetch events
 			const bookingsResponse = await fetch(
-				`${API_BASE}/bookings?centreId=${selectedCenter}&sportId=${selectedSport}&date=${chosenDate}`,
+				`${API_BASE}/bookings?userId=${selectedCenter}&sportId=${selectedSport}&date=${chosenDate}`,
 				{
 					headers: { Authorization: `Bearer ${authToken}` },
 				}

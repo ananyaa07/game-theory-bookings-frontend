@@ -1,24 +1,59 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import Navbar from '../../components/Navbar';
 
-const initialCustomers = [
-  { id: 1, name: 'John Doe', role: 'customer' },
-  { id: 2, name: 'Jane Smith', role: 'customer' },
-  { id: 3, name: 'Michael Brown', role: 'customer' },
-];
+const API_BASE = "http://localhost:3001/api/v1";
 
 const Promote = () => {
-  const [customers, setCustomers] = useState(initialCustomers);
+  const [customers, setCustomers] = useState([]);
+  const [successMessage, setSuccessMessage] = useState(""); // State for success message
+  const token = localStorage.getItem("token"); 
 
-  const handlePromote = (id) => {
-    const updatedCustomers = customers.map((customer) => {
-      if (customer.id === id) {
-        return { ...customer, role: 'operations' }; 
-      }
-      return customer;
-    });
-    setCustomers(updatedCustomers);
+  // Fetch customers from the API
+  const fetchCustomers = async () => {
+    try {
+      const response = await axios.get(`${API_BASE}/auth/customers`, {
+        headers: {
+          Authorization: `Bearer ${token}`, 
+        },
+      });
+      setCustomers(response.data);
+    } catch (error) {
+      console.error("Error fetching customers:", error);
+    }
   };
+
+  // Promote Customer to Operations
+  const handlePromote = async (id) => {
+    try {
+      const response = await axios.patch(`${API_BASE}/auth/promote?userId=${id}`, {}, {
+        headers: {
+          Authorization: `Bearer ${token}`, 
+        },
+      });
+
+      setSuccessMessage(response.data.message);
+      
+      setCustomers((prevCustomers) =>
+        prevCustomers.map((customer) =>
+          customer._id === id ? { ...customer, role: 'operations' } : customer
+        )
+      );
+
+      setTimeout(() => {
+        setSuccessMessage("");
+      }, 3000);
+
+    } catch (error) {
+      console.error("Error promoting user:", error);
+      const errorMessage = error.response?.data?.message || "Failed to promote user.";
+      setSuccessMessage(errorMessage); 
+    }
+  };
+
+  useEffect(() => {
+    fetchCustomers(); 
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -26,28 +61,34 @@ const Promote = () => {
       <div className="p-6">
         <h2 className="text-3xl font-semibold text-center text-navyBlue mb-6">Promote Users</h2>
 
+        {successMessage && (
+          <div className="bg-green-100 text-green-700 p-3 mb-4 rounded text-center">
+            {successMessage}
+          </div>
+        )}
+
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white border border-gray-300">
             <thead>
               <tr className="bg-navyBlue text-white">
-                <th className="py-2 px-4 border">ID</th>
-                <th className="py-2 px-4 border">Name</th>
-                <th className="py-2 px-4 border">Role</th>
-                <th className="py-2 px-4 border">Actions</th>
+                <th className="py-2 px-4 border text-center">ID</th>
+                <th className="py-2 px-4 border text-center">Name</th>
+                <th className="py-2 px-4 border text-center">Role</th>
+                <th className="py-2 px-4 border text-center">Actions</th>
               </tr>
             </thead>
             <tbody>
               {customers.map((customer) => (
-                <tr key={customer.id} className="hover:bg-gray-100">
-                  <td className="py-2 px-4 border">{customer.id}</td>
-                  <td className="py-2 px-4 border">{customer.name}</td>
+                <tr key={customer._id} className="hover:bg-gray-100">
+                  <td className="py-2 px-4 border text-center">{customer._id}</td>
+                  <td className="py-2 px-4 border text-center">{customer.name}</td>
                   <td className="py-2 px-4 border text-center">{customer.role}</td>
                   <td className="py-2 px-4 border text-center">
                     {customer.role === 'operations' ? (
                       <span className="text-green-500">Promoted</span>
                     ) : (
                       <button
-                        onClick={() => handlePromote(customer.id)}
+                        onClick={() => handlePromote(customer._id)} 
                         className="bg-navyBlue text-white py-1 px-3 rounded-lg"
                       >
                         Promote to Operations
