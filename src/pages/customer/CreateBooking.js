@@ -1,33 +1,29 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect ,useContext} from "react";
 import axios from "axios";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Navbar from "../../components/Navbar";
+import { AuthContext } from "../../context/AuthContext";
 
 const API_BASE = "http://localhost:3001/api/v1";
 
-const CreateBooking = ({ role }) => {
+const CreateBooking = () => {
+  const {user}=useContext(AuthContext);
   const [centres, setCentres] = useState([]);
   const [sports, setSports] = useState([]);
   const [centre, setCentre] = useState("");
   const [sport, setSport] = useState("");
-  const [typeOfBooking, setTypeOfBooking] = useState("");
   const [date, setDate] = useState(null);
   const [availableSlots, setAvailableSlots] = useState([]);
   const [selectedSlots, setSelectedSlots] = useState([]);
   const [warning, setWarning] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [bookingType, setBookingType] = useState("Booking");
   const token = localStorage.getItem("token");
 
-  const bookingTypes = [
-    "Booking",
-    "Checked-in",
-    "Coaching",
-    "Blocked / Tournament",
-    "Completed",
-    "Pending Payment",
-  ];
+
+  const bookingTypesOperations = ["Booking", "Blocked / Tournament"];
 
   useEffect(() => {
     const fetchCentres = async () => {
@@ -53,7 +49,7 @@ const CreateBooking = ({ role }) => {
             headers: { Authorization: `Bearer ${token}` },
           });
           setSports(response.data);
-          setSport(""); 
+          setSport("");
         } catch (error) {
           console.error("Error fetching sports:", error);
           setWarning("Failed to fetch sports. Please try again.");
@@ -80,7 +76,7 @@ const CreateBooking = ({ role }) => {
 
   const handleDateChange = async (selectedDate) => {
     setDate(selectedDate);
-    setSelectedSlots([]); 
+    setSelectedSlots([]);
     setWarning("");
     setSuccessMessage("");
 
@@ -97,21 +93,18 @@ const CreateBooking = ({ role }) => {
   const handleSlotSelect = (slotTime) => {
     setWarning("");
     const isSelected = selectedSlots.includes(slotTime);
-    
-    // Remove slot if already selected
+
     if (isSelected) {
-      setSelectedSlots(prev => prev.filter(slot => slot !== slotTime));
+      setSelectedSlots((prev) => prev.filter((slot) => slot !== slotTime));
       return;
     }
 
-    // Add new slot and sort
     const updatedSlots = [...selectedSlots, slotTime].sort((a, b) => {
       const timeA = parseInt(a.split(":")[0]);
       const timeB = parseInt(b.split(":")[0]);
       return timeA - timeB;
     });
 
-    // Check if slots are consecutive
     const isConsecutive = updatedSlots.every((slot, index) => {
       if (index === 0) return true;
       const prevHour = parseInt(updatedSlots[index - 1].split(":")[0]);
@@ -124,7 +117,6 @@ const CreateBooking = ({ role }) => {
       return;
     }
 
-    // Check maximum duration (e.g., 3 hours)
     if (updatedSlots.length > 3) {
       setWarning("Maximum booking duration is 3 hours.");
       return;
@@ -137,7 +129,7 @@ const CreateBooking = ({ role }) => {
     e.preventDefault();
     setWarning("");
     setSuccessMessage("");
-    
+
     if (selectedSlots.length === 0) {
       setWarning("Please select at least one time slot.");
       return;
@@ -148,15 +140,13 @@ const CreateBooking = ({ role }) => {
 
       const startTimeStr = selectedSlots[0];
       const lastSlotTime = selectedSlots[selectedSlots.length - 1];
-      
-      // Parse hours from the time strings
+
       const startHour = parseInt(startTimeStr.split(":")[0]);
       const endHour = parseInt(lastSlotTime.split(":")[0]) + 1;
 
-      // Format times as HH:00
       const startTime = `${startHour.toString().padStart(2, "0")}:00`;
       const endTime = `${endHour.toString().padStart(2, "0")}:00`;
-      
+
       const formattedDate = date.toISOString().split("T")[0];
 
       const bookingData = {
@@ -165,26 +155,21 @@ const CreateBooking = ({ role }) => {
         date: formattedDate,
         startTime,
         endTime,
-        type: typeOfBooking,
-        note: "User booking"
+        note: `User booking - Type: ${user.role === "operations" ? bookingType : "Booking"}`, 
       };
 
-      const response = await axios.post(
-        `${API_BASE}/bookings`,
-        bookingData,
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
+      const apiEndpoint = user.role === "operations" 
+        ? `${API_BASE}/bookings/operations`  
+        : `${API_BASE}/bookings`; 
 
-      setSuccessMessage(
-        `Booking confirmed for ${formattedDate} from ${startTime} to ${endTime}`
-      );
+      const response = await axios.post(apiEndpoint, bookingData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-      // Reset form
+      setSuccessMessage(`Booking confirmed for ${formattedDate} from ${startTime} to ${endTime}`);
+
       setCentre("");
       setSport("");
-      setTypeOfBooking("");
       setDate(null);
       setSelectedSlots([]);
       setAvailableSlots([]);
@@ -205,7 +190,7 @@ const CreateBooking = ({ role }) => {
 
   return (
     <div>
-      <Navbar role={role} />
+      <Navbar/>
       <div className="min-h-screen bg-gray-100 flex items-center justify-center p-10">
         <div className="bg-white shadow-lg rounded-lg p-6 max-w-xl w-[150%]">
           <h2 className="text-2xl font-semibold text-center text-navyBlue mb-6">
@@ -213,6 +198,27 @@ const CreateBooking = ({ role }) => {
           </h2>
 
           <form className="space-y-4" onSubmit={handleSubmit}>
+            {user.role === "operations" && (
+              <div>
+                <label className="block text-gray-700 mb-2 font-medium" htmlFor="bookingType">
+                  Type of Booking
+                </label>
+                <select
+                  id="bookingType"
+                  value={bookingType}
+                  onChange={(e) => setBookingType(e.target.value)}
+                  className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-navyBlue"
+                  required
+                >
+                  {bookingTypesOperations.map((type, index) => (
+                    <option key={index} value={type}>
+                      {type}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
             <div>
               <label className="block text-gray-700 mb-2 font-medium" htmlFor="centre">
                 Select Centre
@@ -264,27 +270,6 @@ const CreateBooking = ({ role }) => {
             </div>
 
             <div>
-              <label className="block text-gray-700 mb-2 font-medium" htmlFor="typeOfBooking">
-                Type of Booking
-              </label>
-              <select
-                id="typeOfBooking"
-                value={typeOfBooking}
-                onChange={(e) => setTypeOfBooking(e.target.value)}
-                className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-navyBlue"
-                required
-                disabled={isLoading}
-              >
-                <option value="">Select booking type</option>
-                {bookingTypes.map((type) => (
-                  <option key={type} value={type}>
-                    {type}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
               <label className="block text-gray-700 mb-2 font-medium" htmlFor="date">
                 Select Date
               </label>
@@ -318,9 +303,7 @@ const CreateBooking = ({ role }) => {
                       onClick={() => slot.availableSlots > 0 && handleSlotSelect(slot.slot)}
                     >
                       <span className="font-medium">{slot.slot}</span>
-                      <span className={`${
-                        slot.availableSlots === 0 ? "text-red-500" : "text-green-600"
-                      }`}>
+                      <span className={`${slot.availableSlots === 0 ? "text-red-500" : "text-green-600"}`}>
                         {slot.availableSlots} available
                       </span>
                     </div>

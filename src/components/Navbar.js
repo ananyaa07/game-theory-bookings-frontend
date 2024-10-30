@@ -1,25 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState,useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaChevronDown } from 'react-icons/fa'; 
+import { AuthContext } from '../context/AuthContext';
 
 const Navbar = () => {
-  const [role, setRole] = useState(() => localStorage.getItem('role') || '');
+  const {user, setUser} = useContext(AuthContext);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const navigate = useNavigate();  
 
   const logOut = () => {
-    localStorage.removeItem('role');
-    localStorage.removeItem('token');
-    setRole('');  
+    setUser({});
     navigate('/home');  
   };
 
-  useEffect(() => {
-    const storedRole = localStorage.getItem('role');
-    if (storedRole) {
-      setRole(storedRole);  
-    }
-  }, []);
 
   const toggleDropdown = () => {
     setDropdownOpen((prev) => !prev);
@@ -32,7 +25,7 @@ const Navbar = () => {
           Game Theory Booking
         </Link>
         <div>
-          {role === 'customer' ? (
+          {user.role === 'customer' ? (
             <>
               <Link to="/bookings/view">
                 <button className="bg-white text-navyBlue px-4 py-2 rounded-md hover:bg-gray-200 transition mr-2">
@@ -51,9 +44,9 @@ const Navbar = () => {
                 Logout
               </button>
             </>
-          ) : (role === 'operations' || role === 'admin') ? (
+          ) : (user.role === 'operations' || user.role === 'admin') ? (
             <>
-              {role === 'admin' && (
+              {user.role === 'admin' && (
                 <Link to="/promote">
                   <button className="bg-white text-navyBlue px-4 py-2 rounded-md hover:bg-gray-200 transition mr-2">
                     Promote User
@@ -65,6 +58,13 @@ const Navbar = () => {
                   View Timewise Bookings
                 </button>
               </Link>
+              {user.role === 'operations' && (
+                <Link to="/bookings/create">
+                  <button className="bg-white text-navyBlue px-4 py-2 rounded-md hover:bg-gray-200 transition mr-2">
+                    Create Booking
+                  </button>
+                </Link>
+              )}
               <div className="relative inline-block text-left">
                 <div>
                   <button
@@ -91,6 +91,11 @@ const Navbar = () => {
                       <Link to="/operations/create-resource">
                         <button className="block px-4 py-2 text-navyBlue hover:bg-gray-200 w-full text-left">
                           Create Resource
+                        </button>
+                      </Link>
+                      <Link to="/operations/add-sport-center">
+                        <button className="block px-4 py-2 text-navyBlue hover:bg-gray-200 w-full text-left">
+                          Add Sport to Center
                         </button>
                       </Link>
                     </div>

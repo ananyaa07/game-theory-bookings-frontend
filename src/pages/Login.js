@@ -1,11 +1,13 @@
-import React, { useState } from "react";
+import React, { useState,useContext} from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import { AuthContext } from "../context/AuthContext";
 
-const Login = ({ setUserType }) => {
+
+const Login = () => {
+	const {user, setUser} = useContext(AuthContext);
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
-	const [navbarUserType, setNavbarUserType] = useState("");
 	const [loginError, setLoginError] = useState("");
 	const [successMessage, setSuccessMessage] = useState(""); 
 	const navigate = useNavigate();
@@ -30,13 +32,9 @@ const Login = ({ setUserType }) => {
 	
 			const data = await response.json();
 			const { user, token } = data;
-	
-			// Store token, user role, and userId in local storage
+			setUser(user);
 			localStorage.setItem("token", token);
-			localStorage.setItem("role", user.role);
-			localStorage.setItem("userId", user.id); 
-	
-			setNavbarUserType(user.role);
+			console.log("User:", user);
 			setSuccessMessage("Logged in successfully!");
 	
 			setTimeout(() => {
@@ -54,7 +52,7 @@ const Login = ({ setUserType }) => {
 	
 	return (
 		<div>
-			<Navbar userType={navbarUserType} />
+			<Navbar/>
 			<div className="min-h-screen bg-gray-100 flex items-center justify-center p-6">
 				<div className="bg-white shadow-lg rounded-lg p-6 max-w-sm w-full">
 					<h2 className="text-3xl font-semibold text-center text-navyBlue mb-6">

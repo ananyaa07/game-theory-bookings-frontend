@@ -1,18 +1,19 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect ,useContext} from "react";
 import Navbar from "../../components/Navbar";
+import { AuthContext } from "../../context/AuthContext";
 
 const ViewBookings = ({ role }) => {
+  const { user } = useContext(AuthContext);
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const API_BASE = "http://localhost:3001/api/v1";
-  const userId = localStorage.getItem("userId");
 
   useEffect(() => {
     const fetchBookings = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await fetch(`${API_BASE}/bookings/user/${userId}`, {
+        const response = await fetch(`${API_BASE}/bookings/user/${user.id}`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -34,7 +35,7 @@ const ViewBookings = ({ role }) => {
     };
 
     fetchBookings();
-  }, [userId]);
+  }, [user.id]);
 
   // Function to format date
   const formatDate = (dateString) => {
@@ -44,7 +45,7 @@ const ViewBookings = ({ role }) => {
 
   return (
     <div>
-      <Navbar role={role} />
+      <Navbar/>
       <div className="min-h-screen bg-gray-100 flex items-center justify-center p-6">
         <div className="bg-white shadow-lg rounded-lg p-6 max-w-4xl w-full">
           <h2 className="text-2xl font-semibold text-center text-navyBlue mb-6">

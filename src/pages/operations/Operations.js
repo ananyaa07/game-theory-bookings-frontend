@@ -26,7 +26,7 @@ const Operations = ({ userType }) => {
 
   return (
     <div>
-      <Navbar userType={userType} />
+      <Navbar/>
       <div className="min-h-screen bg-gray-100 flex items-center justify-center p-6">
         <div className="bg-white shadow-lg rounded-lg p-6 max-w-md w-full">
           <h2 className="text-2xl font-semibold text-center text-navyBlue mb-6">

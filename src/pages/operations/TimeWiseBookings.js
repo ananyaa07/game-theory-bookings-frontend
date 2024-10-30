@@ -158,7 +158,7 @@ const TimelyBookings = ({ userType }) => {
 
 			// Fetch events
 			const bookingsResponse = await fetch(
-				`${API_BASE}/bookings?userId=${selectedCenter}&sportId=${selectedSport}&date=${chosenDate}`,
+				`${API_BASE}/bookings?centerId=${selectedCenter}&sportId=${selectedSport}&date=${chosenDate}`,
 				{
 					headers: { Authorization: `Bearer ${authToken}` },
 				}
@@ -240,7 +240,7 @@ const TimelyBookings = ({ userType }) => {
 
 	return (
 		<div className="min-h-screen bg-gray-100">
-			<Navbar userType={userType} />
+			<Navbar/>
 			<div className="p-6">
 				<h2 className="text-3xl font-semibold text-center text-navyBlue mb-6">
 					Timely Bookings

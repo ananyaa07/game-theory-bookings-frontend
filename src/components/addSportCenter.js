@@ -4,15 +4,14 @@ import Navbar from "./Navbar";
 
 const API_BASE = "http://localhost:3001/api/v1";
 
-const CreateSport = ({ role }) => {
-  const [name, setName] = useState("");
-  const [selectedCenter, setSelectedCenter] = useState(""); 
-  const [allCenters, setAllCenters] = useState([]); 
+const AddSportToCenter = ({ role }) => {
+  const [selectedCenter, setSelectedCenter] = useState("");
+  const [allCenters, setAllCenters] = useState([]);
+  const [allSports, setAllSports] = useState([]);
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const token = localStorage.getItem("token");
 
-  // Fetch centers from the server
   useEffect(() => {
     const fetchCenters = async () => {
       try {
@@ -27,29 +26,42 @@ const CreateSport = ({ role }) => {
         setErrorMessage("Could not load centers.");
       }
     };
+
+    const fetchSports = async () => {
+      try {
+        const response = await axios.get(`${API_BASE}/sports`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setAllSports(response.data);
+      } catch (error) {
+        console.error("Error fetching sports:", error);
+        setErrorMessage("Could not load sports.");
+      }
+    };
+
     fetchCenters();
+    fetchSports();
   }, [token]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const newSport = {
-      name,
-      centers: [selectedCenter],
-    };
+    const sportId = e.target.sportId.value;
 
     try {
-      await axios.post(`${API_BASE}/sports`, newSport, {
+      await axios.post(`${API_BASE}/centers/${selectedCenter}/sports`, { sportId }, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      setSuccessMessage("Sport created successfully!");
+      setSuccessMessage("Sport added to center successfully!");
       setErrorMessage("");
-      setName("");
       setSelectedCenter("");
+      e.target.reset();
     } catch (error) {
-      console.error("There was an error creating the sport!", error);
+      console.error("There was an error adding the sport to the center!", error);
       setErrorMessage(error.response?.data?.error || error.message);
       setSuccessMessage("");
     }
@@ -61,7 +73,7 @@ const CreateSport = ({ role }) => {
       <div className="min-h-screen bg-gray-100 flex items-center justify-center p-6">
         <div className="bg-white shadow-lg rounded-lg p-6 max-w-2xl w-full">
           <h2 className="text-2xl font-semibold text-center text-navyBlue mb-6">
-            Create Sport
+            Add Sport to Center
           </h2>
 
           {successMessage && (
@@ -78,41 +90,40 @@ const CreateSport = ({ role }) => {
 
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
-              <label className="block text-gray-700">Sport Name</label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-                className="w-full px-3 py-2 border rounded"
-              />
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-gray-700">Select Centre</label>
+              <label className="block text-gray-700">Select Center</label>
               <select
                 value={selectedCenter}
                 onChange={(e) => setSelectedCenter(e.target.value)}
-                required
                 className="w-full px-3 py-2 border rounded"
-                disabled={allCenters.length === 0} 
+                required
               >
                 <option value="" disabled>Select a center</option>
-                {allCenters.length > 0 ? (
-                  allCenters.map((center) => (
-                    <option key={center._id} value={center._id}>
-                      {center.name} - {center.address}
-                    </option>
-                  ))
-                ) : (
-                  <option value="" disabled>No centers available</option>
-                )}
+                {allCenters.map((center) => (
+                  <option key={center._id} value={center._id}>
+                    {center.name}
+                  </option>
+                ))}
               </select>
             </div>
 
+            <div className="mb-4">
+              <label className="block text-gray-700">Select Sport</label>
+              <select
+                name="sportId"
+                className="w-full px-3 py-2 border rounded"
+                required
+              >
+                <option value="" disabled>Select a sport</option>
+                {allSports.map((sport) => (
+                  <option key={sport._id} value={sport._id}>
+                    {sport.name}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-            <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded" disabled={allCenters.length === 0}>
-              Create Sport
+            <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">
+              Add Sport
             </button>
           </form>
         </div>
@@ -121,4 +132,4 @@ const CreateSport = ({ role }) => {
   );
 };
 
-export default CreateSport;
+export default AddSportToCenter;
