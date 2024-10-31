@@ -12,8 +12,8 @@ const Login = () => {
 	const [successMessage, setSuccessMessage] = useState(""); 
 	const navigate = useNavigate();
 
-	const API_BASE = 'http://localhost:3001/api/v1';
-
+	const API_BASE = process.env.REACT_APP_API_BASE_URL;
+	
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		setLoginError(""); 

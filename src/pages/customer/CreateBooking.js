@@ -4,8 +4,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Navbar from "../../components/Navbar";
 import { AuthContext } from "../../context/AuthContext";
-
-const API_BASE = "http://localhost:3001/api/v1";
+const API_BASE = process.env.REACT_APP_API_BASE_URL;
 
 const CreateBooking = () => {
   const {user}=useContext(AuthContext);

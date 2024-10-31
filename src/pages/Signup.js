@@ -12,8 +12,8 @@ const Signup = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const API_BASE = 'http://localhost:3001/api';
-
+  const API_BASE = process.env.REACT_APP_API_BASE_URL;
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);

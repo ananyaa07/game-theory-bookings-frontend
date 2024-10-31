@@ -7,8 +7,7 @@ const ViewBookings = ({ role }) => {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const API_BASE = "http://localhost:3001/api/v1";
-
+  const API_BASE = process.env.REACT_APP_API_BASE_URL;
   useEffect(() => {
     const fetchBookings = async () => {
       try {

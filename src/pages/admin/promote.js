@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Navbar from '../../components/Navbar';
 
-const API_BASE = "http://localhost:3001/api/v1";
+const API_BASE = process.env.REACT_APP_API_BASE_URL;
 
 const Promote = () => {
   const [customers, setCustomers] = useState([]);
-  const [successMessage, setSuccessMessage] = useState(""); // State for success message
+  const [successMessage, setSuccessMessage] = useState(""); 
   const token = localStorage.getItem("token"); 
 
   // Fetch customers from the API
