@@ -6,7 +6,7 @@ import CreateBooking from './pages/customer/CreateBooking';
 import ViewBookings from './pages/customer/ViewBookings';
 import TimeWiseBookings from './pages/operations/TimeWiseBookings';
 import Signup from './pages/Signup';
-import Promote from './pages/admin/Promote';
+import Promote from './pages/admin/promote.js';
 import CreateCenter from './components/createCenter';
 import CreateSport from './components/createSport';
 import CreateResource from './components/createResource';

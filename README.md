@@ -1,70 +1,93 @@
-# Getting Started with Create React App
+# Game Theory Bookings
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Game Theory Bookings is a React-based platform that allows users to book sports facilities easily, view existing bookings, and manage resources within sports centers. The application provides different levels of access and functionality based on the user’s role: customer, operations, or admin.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+### User Roles
+- **Customer**: Can create and view bookings.
+- **Operations**: Manages resources, creates facilities, and schedules tournaments.
+- **Admin**: Promotes users to operations role and has access to additional management tools.
 
-### `npm start`
+### Main Functionalities
+1. **Login and Signup**  
+   - New users can register and existing users can log in. Login is required to access most app features.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+2. **Booking Management**
+   - **Create Booking**: Allows customers to select a facility, choose a sport, and book a time slot.
+   - **View Bookings**: Customers can view their past and upcoming bookings with detailed information about each booking.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+3. **Admin and Operations Controls**
+   - **Promote Users**: Admins can promote customers to the operations role.
+   - **Create Sports Center**: Operations can add new sports centers.
+   - **Create Resources**: Operations can add new resources (e.g., courts, equipment) for use within a sports center.
+   - **Create Sport Types**: Operations can add various sports to a facility and manage its availability.
 
-### `npm test`
+4. **Booking Visualization**
+   - **Time-wise Bookings**: Operations can view bookings in a calendar format, broken down by resources and scheduled by time slots.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+5. **Protected Routes**
+   - The app restricts access to specific routes based on the user's role, ensuring that only authorized users can access sensitive areas.
 
-### `npm run build`
+## Project Setup
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+This project was initialized with [Create React App](https://github.com/facebook/create-react-app) and includes Tailwind CSS for styling and Axios for API requests.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Prerequisites
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- Node.js and npm installed
+- API Base URL: Set the environment variable `REACT_APP_API_BASE_URL` to the base URL of the backend API.
 
-### `npm run eject`
+### Installation
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/ananyaa07/game-theory-bookings.git
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Start the development server:
+   ```bash
+   npm start
+   ```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Environment Variables
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+Set up a `.env` file in the project root with the following environment variable:
+```
+REACT_APP_API_BASE_URL=your_api_base_url_here
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## Component Overview
 
-## Learn More
+### Key Components
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+- **Navbar**: Provides navigation based on the user’s role, with quick access to relevant features.
+- **ProtectedRoute**: Restricts access to routes based on user authentication status.
+- **AuthContext**: Manages the current user state, including authentication and token storage.
+- **Pages**:
+   - **HomePage**: Introductory page with an overview of the app’s functionality.
+   - **Login & Signup**: Handles user authentication.
+   - **CreateBooking**: Allows customers to book a slot in a selected sports center.
+   - **ViewBookings**: Displays all bookings made by the user.
+   - **Promote**: Enables admins to promote customers to the operations role.
+   - **TimeWiseBookings**: Displays bookings on a time-based calendar, useful for operations management.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### Styling
 
-### Code Splitting
+Tailwind CSS is used for quick and responsive styling, with custom classes to align with the app’s color scheme and layout requirements.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+---
 
-### Analyzing the Bundle Size
+### Built With
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+- **React**: JavaScript library for building user interfaces.
+- **React Router**: Manages navigation and routes within the app.
+- **Tailwind CSS**: A utility-first CSS framework for styling.
+- **Axios**: Promise-based HTTP client for the browser and Node.js.
+- **Datepicker**: For selecting booking dates.
+- **FullCalendar**: A JavaScript calendar library used in the Operations panel for viewing bookings by time.
 
-### Making a Progressive Web App
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
