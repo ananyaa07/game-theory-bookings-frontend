@@ -21,7 +21,7 @@ const Signup = () => {
     setSuccess('');
 
     try {
-      const response = await axios.post(`${API_BASE}/v1/auth/register`, {
+      const response = await axios.post(`${API_BASE}/auth/register`, {
         name,
         email,
         password

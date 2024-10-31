@@ -1,4 +1,4 @@
-import React, { useState, useEffect ,useContext} from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -7,7 +7,7 @@ import { AuthContext } from "../../context/AuthContext";
 const API_BASE = process.env.REACT_APP_API_BASE_URL;
 
 const CreateBooking = () => {
-  const {user}=useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const [centres, setCentres] = useState([]);
   const [sports, setSports] = useState([]);
   const [centre, setCentre] = useState("");
@@ -20,7 +20,6 @@ const CreateBooking = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [bookingType, setBookingType] = useState("Booking");
   const token = localStorage.getItem("token");
-
 
   const bookingTypesOperations = ["Booking", "Blocked / Tournament"];
 
@@ -53,6 +52,8 @@ const CreateBooking = () => {
           console.error("Error fetching sports:", error);
           setWarning("Failed to fetch sports. Please try again.");
         }
+      } else {
+        setSports([]); // Reset sports if no center selected
       }
     };
     fetchSports();
@@ -82,11 +83,21 @@ const CreateBooking = () => {
     if (selectedDate && centre && sport) {
       setIsLoading(true);
       const slots = await getAvailableTimeSlots(centre, sport, selectedDate);
-      setAvailableSlots(slots);
+      const filteredSlots = filterSlotsByCurrentTime(slots, selectedDate);
+      setAvailableSlots(filteredSlots);
       setIsLoading(false);
     } else {
       setAvailableSlots([]);
     }
+  };
+
+  const filterSlotsByCurrentTime = (slots, selectedDate) => {
+    const currentDate = new Date();
+    const isToday = selectedDate.toDateString() === currentDate.toDateString();
+    if (!isToday) return slots;
+
+    const currentHour = currentDate.getHours();
+    return slots.filter((slot) => parseInt(slot.slot.split(":")[0]) > currentHour);
   };
 
   const handleSlotSelect = (slotTime) => {
@@ -154,28 +165,32 @@ const CreateBooking = () => {
         date: formattedDate,
         startTime,
         endTime,
-        note: `User booking - Type: ${user.role === "operations" ? bookingType : "Booking"}`, 
+        note: `User booking - Type: ${user.role === "operations" ? bookingType : "Booking"}`,
       };
 
-      const apiEndpoint = user.role === "operations" 
-        ? `${API_BASE}/bookings/operations`  
-        : `${API_BASE}/bookings`; 
+      const apiEndpoint =
+        user.role === "operations"
+          ? `${API_BASE}/bookings/operations`
+          : `${API_BASE}/bookings`;
 
       const response = await axios.post(apiEndpoint, bookingData, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      setSuccessMessage(`Booking confirmed for ${formattedDate} from ${startTime} to ${endTime}`);
+      setSuccessMessage(
+        `Booking confirmed for ${formattedDate} from ${startTime} to ${endTime}`
+      );
 
       setCentre("");
       setSport("");
       setDate(null);
       setSelectedSlots([]);
       setAvailableSlots([]);
-
     } catch (error) {
       console.error("Booking creation error:", error);
-      setWarning(error.response?.data?.error || "Failed to create booking. Please try again.");
+      setWarning(
+        error.response?.data?.error || "Failed to create booking. Please try again."
+      );
     } finally {
       setIsLoading(false);
     }
@@ -189,7 +204,7 @@ const CreateBooking = () => {
 
   return (
     <div>
-      <Navbar/>
+      <Navbar />
       <div className="min-h-screen bg-gray-100 flex items-center justify-center p-10">
         <div className="bg-white shadow-lg rounded-lg p-6 max-w-xl w-[150%]">
           <h2 className="text-2xl font-semibold text-center text-navyBlue mb-6">
@@ -260,11 +275,17 @@ const CreateBooking = () => {
                 disabled={!centre || isLoading}
               >
                 <option value="">Select a sport</option>
-                {sports.map((sport) => (
-                  <option key={sport._id} value={sport._id}>
-                    {sport.name}
+                {sports.length ? (
+                  sports.map((sport) => (
+                    <option key={sport._id} value={sport._id}>
+                      {sport.name}
+                    </option>
+                  ))
+                ) : (
+                  <option value="" disabled>
+                    No sports available
                   </option>
-                ))}
+                )}
               </select>
             </div>
 

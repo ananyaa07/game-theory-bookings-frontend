@@ -1,10 +1,10 @@
-import React, { useEffect, useState,useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaChevronDown } from 'react-icons/fa'; 
 import { AuthContext } from '../context/AuthContext';
 
 const Navbar = () => {
-  const {user, setUser} = useContext(AuthContext);
+  const { user, setUser } = useContext(AuthContext);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const navigate = useNavigate();  
 
@@ -12,7 +12,6 @@ const Navbar = () => {
     setUser({});
     navigate('/home');  
   };
-
 
   const toggleDropdown = () => {
     setDropdownOpen((prev) => !prev);
@@ -44,9 +43,9 @@ const Navbar = () => {
                 Logout
               </button>
             </>
-          ) : (user && (user.role === 'operations' || user.role === 'admin')) ? (
+          ) : user && (user.role === 'operations' || user.role === 'admin') ? (
             <>
-              {user && user.role === 'admin' && (
+              {user.role === 'admin' && (
                 <Link to="/promote">
                   <button className="bg-white text-navyBlue px-4 py-2 rounded-md hover:bg-gray-200 transition mr-2">
                     Promote User
@@ -58,13 +57,11 @@ const Navbar = () => {
                   View Timewise Bookings
                 </button>
               </Link>
-              {user && user.role === 'operations' && (
-                <Link to="/bookings/create">
-                  <button className="bg-white text-navyBlue px-4 py-2 rounded-md hover:bg-gray-200 transition mr-2">
-                    Create Booking
-                  </button>
-                </Link>
-              )}
+              <Link to="/bookings/create">
+                <button className="bg-white text-navyBlue px-4 py-2 rounded-md hover:bg-gray-200 transition mr-2">
+                  Create Booking
+                </button>
+              </Link>
               <div className="relative inline-block text-left">
                 <div>
                   <button
