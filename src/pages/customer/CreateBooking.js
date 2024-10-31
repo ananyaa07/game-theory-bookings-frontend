@@ -23,6 +23,14 @@ const CreateBooking = () => {
 
   const bookingTypesOperations = ["Booking", "Blocked / Tournament"];
 
+  // Updated date formatting function
+  const formatDateToYYYYMMDD = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
   useEffect(() => {
     const fetchCentres = async () => {
       try {
@@ -53,7 +61,7 @@ const CreateBooking = () => {
           setWarning("Failed to fetch sports. Please try again.");
         }
       } else {
-        setSports([]); // Reset sports if no center selected
+        setSports([]);
       }
     };
     fetchSports();
@@ -61,7 +69,7 @@ const CreateBooking = () => {
 
   const getAvailableTimeSlots = async (centerId, sportId, selectedDate) => {
     try {
-      const formattedDate = selectedDate.toISOString().split("T")[0];
+      const formattedDate = formatDateToYYYYMMDD(selectedDate);
       const response = await axios.get(`${API_BASE}/bookings/available`, {
         params: { centerId, sportId, date: formattedDate },
         headers: { Authorization: `Bearer ${token}` },
@@ -93,7 +101,7 @@ const CreateBooking = () => {
 
   const filterSlotsByCurrentTime = (slots, selectedDate) => {
     const currentDate = new Date();
-    const isToday = selectedDate.toDateString() === currentDate.toDateString();
+    const isToday = formatDateToYYYYMMDD(selectedDate) === formatDateToYYYYMMDD(currentDate);
     if (!isToday) return slots;
 
     const currentHour = currentDate.getHours();
@@ -157,7 +165,7 @@ const CreateBooking = () => {
       const startTime = `${startHour.toString().padStart(2, "0")}:00`;
       const endTime = `${endHour.toString().padStart(2, "0")}:00`;
 
-      const formattedDate = date.toISOString().split("T")[0];
+      const formattedDate = formatDateToYYYYMMDD(date);
 
       const bookingData = {
         centerId: centre,
@@ -165,7 +173,7 @@ const CreateBooking = () => {
         date: formattedDate,
         startTime,
         endTime,
-        note: `User booking - Type: ${user.role === "operations" ? bookingType : "Booking"}`,
+        note: `booking: ${user.role === "operations" ? bookingType : "Booking"}`,
       };
 
       const apiEndpoint =
@@ -181,6 +189,7 @@ const CreateBooking = () => {
         `Booking confirmed for ${formattedDate} from ${startTime} to ${endTime}`
       );
 
+      // Reset form
       setCentre("");
       setSport("");
       setDate(null);

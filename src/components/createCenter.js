@@ -7,7 +7,7 @@ const API_BASE = process.env.REACT_APP_API_BASE_URL;
 const CreateCenter = ({ role }) => {
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
-  const [sports, setSports] = useState([]);
+  const [selectedSport, setSelectedSport] = useState(""); // Single selected sport
   const [allSports, setAllSports] = useState([]); 
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -36,7 +36,7 @@ const CreateCenter = ({ role }) => {
     const newCentre = {
       name,
       address,
-      sports,
+      sports: [selectedSport], // Using single selected sport
     };
 
     try {
@@ -49,7 +49,7 @@ const CreateCenter = ({ role }) => {
       setErrorMessage("");
       setName("");
       setAddress("");
-      setSports([]);
+      setSelectedSport(""); // Reset selected sport
     } catch (error) {
       console.error("There was an error creating the center!", error);
       setErrorMessage(error.response?.data?.error || error.message);
@@ -58,11 +58,7 @@ const CreateCenter = ({ role }) => {
   };
 
   const handleDropdownChange = (e) => {
-    const sportId = e.target.value;
-    if (sportId && !sports.includes(sportId)) {
-      setSports([...sports, sportId]);
-    }
-    e.target.value = ""; 
+    setSelectedSport(e.target.value); // Set the selected sport directly
   };
 
   return (
@@ -110,11 +106,11 @@ const CreateCenter = ({ role }) => {
             </div>
 
             <div className="mb-4">
-              <label className="block text-gray-700">Add Sports</label>
+              <label className="block text-gray-700">Sport</label>
               <select
+                value={selectedSport} // Display selected sport here
                 onChange={handleDropdownChange}
                 className="w-full px-3 py-2 border rounded"
-                defaultValue=""
                 required
               >
                 <option value="" disabled>Select a sport</option>
@@ -130,7 +126,7 @@ const CreateCenter = ({ role }) => {
               </select>
             </div>
 
-            <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded" disabled={sports.length === 0}>
+            <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded" disabled={!selectedSport}>
               Create Center
             </button>
           </form>

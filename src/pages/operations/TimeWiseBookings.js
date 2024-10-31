@@ -143,7 +143,7 @@ const TimelyBookings = ({ userType }) => {
 		try {
 			// Fetch resources
 			const resourcesResponse = await fetch(
-				`${API_BASE}/resources?centerId=${selectedCenter}&sportId=${selectedSport}`,
+				`${API_BASE}/resources?center=${selectedCenter}&sport=${selectedSport}`,
 				{
 					headers: { Authorization: `Bearer ${authToken}` },
 				}
