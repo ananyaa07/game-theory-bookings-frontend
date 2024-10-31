@@ -25,7 +25,7 @@ const Navbar = () => {
           Game Theory Booking
         </Link>
         <div>
-          {user.role === 'customer' ? (
+          {user && user.role === 'customer' ? (
             <>
               <Link to="/bookings/view">
                 <button className="bg-white text-navyBlue px-4 py-2 rounded-md hover:bg-gray-200 transition mr-2">
@@ -44,9 +44,9 @@ const Navbar = () => {
                 Logout
               </button>
             </>
-          ) : (user.role === 'operations' || user.role === 'admin') ? (
+          ) : (user && (user.role === 'operations' || user.role === 'admin')) ? (
             <>
-              {user.role === 'admin' && (
+              {user && user.role === 'admin' && (
                 <Link to="/promote">
                   <button className="bg-white text-navyBlue px-4 py-2 rounded-md hover:bg-gray-200 transition mr-2">
                     Promote User
@@ -58,7 +58,7 @@ const Navbar = () => {
                   View Timewise Bookings
                 </button>
               </Link>
-              {user.role === 'operations' && (
+              {user && user.role === 'operations' && (
                 <Link to="/bookings/create">
                   <button className="bg-white text-navyBlue px-4 py-2 rounded-md hover:bg-gray-200 transition mr-2">
                     Create Booking

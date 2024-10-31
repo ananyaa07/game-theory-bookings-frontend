@@ -91,3 +91,6 @@ Tailwind CSS is used for quick and responsive styling, with custom classes to al
 - **FullCalendar**: A JavaScript calendar library used in the Operations panel for viewing bookings by time.
 
 
+### Deployment
+
+The app is deployed on Vercel and can be accessed [here](https://game-theory-bookings.vercel.app/home).
